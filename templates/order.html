@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">Informations de livraison</h1>
+
+<form method="POST" class="order-form">
+
+    <div class="form-row">
+        <input type="text" name="name" placeholder="Nom" required>
+        <input type="text" name="prenom" placeholder="Prénom" required>
+    </div>
+
+    <input type="text" name="adresse" placeholder="Adresse" required>
+
+    <input type="text" name="phone" placeholder="Téléphone (10 chiffres)" required>
+
+    <button type="submit">
+        VALIDER LA COMMANDE
+    </button>
+
+</form>
+
+{% endblock %}

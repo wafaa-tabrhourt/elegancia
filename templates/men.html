@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="collection-container">
+    <h1 class="collection-title">Collection Hommes</h1>
+    <div class="title-divider"></div>
+
+    <div class="products-grid">
+        {% for p in products %}
+        <div class="product-card">
+            <div class="product-image-container">
+                <img src="/static/images/{{p.image}}" alt="{{p.name}}" class="main-product-img">
+            </div>
+            
+            <div class="product-info">
+                <h3 class="product-name">{{p.name}}</h3>
+                <p class="product-price">300 DH</p>
+                <p class="product-size">Size: XL</p>
+                
+                <a href="/add_to_cart/{{p.id}}" class="add-to-cart-btn">Ajouter au panier</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

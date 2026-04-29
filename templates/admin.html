@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="page-title">Espace administrateur</h1>
+
+<div class="order-form">
+
+    <input type="password" id="admin-pwd" placeholder="Mot de passe">
+
+    <p id="pwd-error" style="color:red; display:none;">
+        Mot de passe incorrect
+    </p>
+
+    <button class="btn-primary" onclick="checkPassword()">
+        Accéder
+    </button>
+
+</div>
+
+<div id="orders" style="display:none; margin-top:30px;"></div>
+
+<script>
+const ADMIN_PASSWORD = "elegancia2024";
+
+function checkPassword(){
+    let pwd = document.getElementById("admin-pwd").value;
+
+    if(pwd === ADMIN_PASSWORD){
+        document.getElementById("orders").style.display = "block";
+        loadOrders();
+    } else {
+        document.getElementById("pwd-error").style.display = "block";
+    }
+}
+
+function loadOrders(){
+    fetch("/admin-data")
+    .then(res => res.json())
+    .then(data => {
+        let html = "";
+
+        data.forEach(order => {
+            html += `
+                <div class="cart-item">
+                    <p><b>${order.prenom} ${order.name}</b></p>
+                    <p>${order.phone}</p>
+                    <p>${order.adresse}</p>
+                </div>
+            `;
+        });
+
+        document.getElementById("orders").innerHTML = html;
+    });
+}
+</script>
+
+{% endblock %}
