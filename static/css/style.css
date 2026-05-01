@@ -549,7 +549,7 @@ header .logo svg { color: var(--gold-elegancia); }
 
 .btn-back:hover { color: var(--dark); }
 
-.form-group { margin-bottom: 14px; }
+.form-group { margin-bottom: 14px; }                
 
 .form-group label {
   display: block;

@@ -2,30 +2,42 @@
 
 {% block content %}
 
-<h1 class="page-title">Votre panier</h1>
+<div style="max-width: 600px; margin: 0 auto; padding: 2rem;">
 
-<div id="cart-items">
+    <h1 class="page-title">Votre panier</h1>
 
-{% for item in items %}
-<div class="cart-item">
-    <div>
-        <div class="item-name">{{ item.name }}</div>
-        <div class="item-price">{{ item.price }} DH</div>
-    </div>
+    {% if items %}
 
-    <a href="/remove/{{ loop.index0 }}" class="btn-remove">Supprimer</a>
+        <div id="cart-items">
+            {% for item in items %}
+            <div class="cart-item">
+                <div>
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-price">{{ item.price }} DH</div>
+                </div>
+                <a href="/remove/{{ loop.index0 }}" class="btn-remove">Supprimer</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <hr class="divider">
+
+        <div class="total-row">
+            <span class="total-label">Total</span>
+            <span class="total-amount">{{ total }} DH</span>
+        </div>
+
+        <a href="/order" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-top: 1rem;">
+            Commander
+        </a>
+
+    {% else %}
+        <p class="empty-msg">Votre panier est vide.</p>
+        <a href="/" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-top:1rem;">
+            Continuer mes achats
+        </a>
+    {% endif %}
+
 </div>
-{% endfor %}
-
-</div>
-
-<hr class="divider">
-
-<div class="total-row">
-    <span class="total-label">Total</span>
-    <span class="total-amount">{{ total }} DH</span>
-</div>
-
-<a href="/order" class="btn-primary">Commander</a>
 
 {% endblock %}
