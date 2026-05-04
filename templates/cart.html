@@ -1,43 +1,43 @@
 {% extends "base.html" %}
+{% block title %}Panier – Elegancia{% endblock %}
 
 {% block content %}
+<div class="cart-container">
+  <h1 class="cart-title">Mon Panier</h1>
 
-<div style="max-width: 600px; margin: 0 auto; padding: 2rem;">
+  {% if items %}
+    {% for item in items %}
+    <div class="cart-item">
+      {% if item.image %}
+      <img src="/static/images/{{ item.image }}" alt="{{ item.name }}" class="cart-item-img">
+      {% else %}
+      <div class="cart-item-img" style="background:#f5f0e8;display:flex;align-items:center;justify-content:center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      {% endif %}
+      <div class="cart-item-info">
+        <div class="cart-item-name">{{ item.name }}</div>
+        <div class="cart-item-price">{{ item.price }} DH</div>
+      </div>
+      <a href="/remove/{{ loop.index0 }}" class="cart-remove">Retirer</a>
+    </div>
+    {% endfor %}
 
-    <h1 class="page-title">Votre panier</h1>
+    <div class="cart-total">
+      <span>Total</span>
+      <span class="cart-total-price">{{ total }} DH</span>
+    </div>
 
-    {% if items %}
+    <div style="display:flex;gap:12px;margin-top:1.5rem;flex-wrap:wrap;">
+      <a href="/order" class="btn-primary" style="flex:1;text-align:center;">Commander</a>
+      <a href="/" style="flex:1;text-align:center;padding:13px;border:0.5px solid rgba(0,0,0,0.15);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;color:#4a4a48;transition:.2s;" onmouseover="this.style.background='#f5f0e8'" onmouseout="this.style.background='transparent'">Continuer</a>
+    </div>
 
-        <div id="cart-items">
-            {% for item in items %}
-            <div class="cart-item">
-                <div>
-                    <div class="item-name">{{ item.name }}</div>
-                    <div class="item-price">{{ item.price }} DH</div>
-                </div>
-                <a href="/remove/{{ loop.index0 }}" class="btn-remove">Supprimer</a>
-            </div>
-            {% endfor %}
-        </div>
-
-        <hr class="divider">
-
-        <div class="total-row">
-            <span class="total-label">Total</span>
-            <span class="total-amount">{{ total }} DH</span>
-        </div>
-
-        <a href="/order" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-top: 1rem;">
-            Commander
-        </a>
-
-    {% else %}
-        <p class="empty-msg">Votre panier est vide.</p>
-        <a href="/" class="btn-primary" style="display:block; text-align:center; text-decoration:none; margin-top:1rem;">
-            Continuer mes achats
-        </a>
-    {% endif %}
-
+  {% else %}
+    <div class="empty-state" style="padding:4rem 0;">
+      <p style="margin-bottom:1.5rem;">Votre panier est vide.</p>
+      <a href="/" class="btn-primary">Découvrir la collection</a>
+    </div>
+  {% endif %}
 </div>
-
 {% endblock %}
