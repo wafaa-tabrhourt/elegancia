@@ -1,27 +1,150 @@
 {% extends "base.html" %}
-
 {% block content %}
+
 <div class="collection-container">
     <h1 class="collection-title">Collection Femmes</h1>
     <div class="title-divider"></div>
 
+    {% if products %}
     <div class="products-grid">
         {% for p in products %}
         <div class="product-card">
-            <div class="product-image-container">
-                <img src="/static/images/women1.png" alt="{{p.name}}" class="main-product-img">
-                
+
+            <div class="product-image-container" style="position:relative; overflow:hidden;">
+                {% if p.images %}
+                    <!-- IMAGE PRINCIPALE -->
+                    <img id="main-{{ p.id }}"
+                        src="/static/images/{{ p.images[0] }}"
+                        alt="{{ p.name }}"
+                        class="main-product-img"
+                        style="cursor:zoom-in;"
+                        onclick="openZoom({{ p.images | tojson }}, 0)">
+
+                    <!-- BOUTON ZOOM -->
+                    <div onclick="openZoom({{ p.images | tojson }}, 0)"
+                        style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.4);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity 0.2s;"
+                        class="zoom-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    </div>
+
+                    <!-- MINIATURES -->
+                    {% if p.images|length > 1 %}
+                    <div style="display:flex;gap:6px;padding:8px 10px;background:white;overflow-x:auto;">
+                        {% for img in p.images %}
+                        <img src="/static/images/{{ img }}"
+                            onclick="changeMain('{{ p.id }}', '{{ img }}', this, {{ p.images | tojson }}, {{ loop.index0 }})"
+                            style="width:50px;height:50px;object-fit:cover;border-radius:4px;cursor:pointer;border:2px solid {{ '#C9A84C' if loop.first else 'transparent' }};opacity:{{ '1' if loop.first else '0.55' }};transition:all 0.2s;flex-shrink:0;"
+                            class="thumb-{{ p.id }}">
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#aaa;font-size:13px;">Aucune image</div>
+                {% endif %}
             </div>
-            
+
             <div class="product-info">
-                <h3 class="product-name">{{p.name}}</h3>
-                <p class="product-price">{{p.price}} DH</p>
-                <p class="product-size">Size: {{p.size}}</p>
-                
-                <a href="/add_to_cart/{{p.id}}" class="add-to-cart-btn">Ajouter au panier</a>
+                <h3 class="product-name">{{ p.name }}</h3>
+                <p class="product-price">{{ p.price }} DH</p>
+                <p class="product-size">Taille : {{ p.size }}</p>
+                {% if p.description %}<p class="product-description">{{ p.description }}</p>{% endif %}
+                <a href="/add_to_cart/{{ p.id }}" class="add-to-cart-btn">Ajouter au panier</a>
             </div>
+
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <p style="text-align:center;color:#888;padding:3rem 0;font-style:italic;">Aucun produit disponible pour le moment.</p>
+    {% endif %}
 </div>
+
+<!-- MODAL ZOOM -->
+<div id="zoomModal" onclick="closeZoom()"
+    style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.93);z-index:9999;justify-content:center;align-items:center;">
+
+    <div onclick="event.stopPropagation()" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:92vw;">
+
+        <!-- FERMER -->
+        <button onclick="closeZoom()" style="position:absolute;top:-44px;right:0;background:none;border:none;color:white;font-size:28px;cursor:pointer;line-height:1;">&#10005;</button>
+
+        <!-- IMAGE ZOOMÉE -->
+        <img id="zoomImg" src="" alt=""
+            style="max-width:82vw;max-height:76vh;object-fit:contain;border-radius:6px;">
+
+        <!-- FLÈCHES -->
+        <button onclick="changeZoom(-1)"
+            style="position:absolute;left:-56px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:white;font-size:38px;width:46px;height:62px;cursor:pointer;border-radius:6px;">&#8249;</button>
+        <button onclick="changeZoom(1)"
+            style="position:absolute;right:-56px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:white;font-size:38px;width:46px;height:62px;cursor:pointer;border-radius:6px;">&#8250;</button>
+
+        <!-- MINIATURES ZOOM -->
+        <div id="zoomThumbs" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;max-width:82vw;"></div>
+
+        <!-- COMPTEUR -->
+        <div id="zoomCounter" style="color:rgba(255,255,255,0.5);font-size:12px;font-family:sans-serif;letter-spacing:0.1em;"></div>
+    </div>
+</div>
+
+<style>
+.product-image-container:hover .zoom-btn { opacity: 1 !important; }
+.product-description { font-size:12px;color:#888;line-height:1.5;margin-bottom:14px;font-style:italic; }
+</style>
+
+<script>
+var zImgs = [];
+var zIdx  = 0;
+
+function openZoom(images, index) {
+    zImgs = images;
+    zIdx  = index;
+    document.getElementById('zoomModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    renderZoom();
+}
+
+function closeZoom() {
+    document.getElementById('zoomModal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function changeZoom(dir) {
+    zIdx = (zIdx + dir + zImgs.length) % zImgs.length;
+    renderZoom();
+}
+
+function renderZoom() {
+    document.getElementById('zoomImg').src = '/static/images/' + zImgs[zIdx];
+    document.getElementById('zoomCounter').textContent = (zIdx + 1) + ' / ' + zImgs.length;
+    var t = document.getElementById('zoomThumbs');
+    t.innerHTML = zImgs.map((img, i) =>
+        `<img src="/static/images/${img}" onclick="zIdx=${i};renderZoom()"
+            style="width:54px;height:54px;object-fit:cover;border-radius:4px;cursor:pointer;
+            border:2px solid ${i===zIdx?'#C9A84C':'transparent'};
+            opacity:${i===zIdx?'1':'0.5'};transition:all 0.2s;">`
+    ).join('');
+}
+
+function changeMain(pid, imgPath, el, allImages, index) {
+    document.getElementById('main-' + pid).src = '/static/images/' + imgPath;
+    document.getElementById('main-' + pid).onclick = function(){ openZoom(allImages, index); };
+    var thumbs = document.querySelectorAll('.thumb-' + pid);
+    thumbs.forEach(function(t) {
+        t.style.border = '2px solid transparent';
+        t.style.opacity = '0.55';
+    });
+    el.style.border = '2px solid #C9A84C';
+    el.style.opacity = '1';
+}
+
+document.addEventListener('keydown', function(e) {
+    if (document.getElementById('zoomModal').style.display === 'flex') {
+        if (e.key === 'ArrowLeft')  changeZoom(-1);
+        if (e.key === 'ArrowRight') changeZoom(1);
+        if (e.key === 'Escape')     closeZoom();
+    }
+});
+</script>
+
 {% endblock %}
