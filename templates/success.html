@@ -2,26 +2,15 @@
 
 {% block content %}
 
-<div style="max-width:500px; margin: 4rem auto; text-align:center; padding: 2rem;">
+<h1 style="text-align:center;">✅ Commande réussie</h1>
 
-    <div style="width:64px; height:64px; background:#eaf7ef; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:28px; color:#2d7a4f;">
-        ✓
-    </div>
+<p style="text-align:center;">
+Merci {{ prenom }} {{ name }}<br>
+Votre commande a été enregistrée avec succès.
+</p>
 
-    <h1 style="font-family:'Cormorant Garamond',serif; font-size:28px; font-weight:300; margin-bottom:0.5rem;">
-        Commande confirmée
-    </h1>
-
-    <p style="color:#7a7570; font-size:14px; line-height:1.7; margin-bottom:2rem;">
-        Merci <strong>{{ prenom }} {{ name }}</strong>,<br>
-        votre commande a bien été enregistrée.<br>
-        Nous vous contacterons prochainement.
-    </p>
-
-    <a href="/" class="btn-primary" style="display:inline-block; text-decoration:none; padding: 14px 40px; max-width:250px;">
-        Retour à l'accueil
-    </a>
-
+<div style="text-align:center;">
+<a href="/" class="btn-primary">Retour à l'accueil</a>
 </div>
 
 {% endblock %}

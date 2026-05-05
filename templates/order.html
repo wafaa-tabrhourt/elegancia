@@ -1,33 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Commander – Elegancia{% endblock %}
 
 {% block content %}
-<div class="order-container">
-  <h1 class="order-title">Finaliser la commande</h1>
-  <div style="width:40px;height:1px;background:#C9A84C;margin:0.6rem 0 2rem;"></div>
 
-  {% if items %}
-  <div style="background:#f9f7f3;border:0.5px solid rgba(0,0,0,0.08);border-radius:8px;padding:16px 18px;margin-bottom:2rem;">
-    <div style="font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#7a7570;margin-bottom:10px;">Récapitulatif</div>
-    {% for item in items %}
-    <div style="display:flex;justify-content:space-between;font-size:13.5px;padding:4px 0;border-bottom:0.5px solid rgba(0,0,0,0.06);">
-      <span>{{ item.name }}</span><span style="color:#C9A84C;font-weight:500;">{{ item.price }} DH</span>
-    </div>
-    {% endfor %}
-    <div style="display:flex;justify-content:space-between;font-weight:600;font-size:15px;margin-top:10px;padding-top:10px;border-top:0.5px solid rgba(0,0,0,0.1);">
-      <span>Total</span><span style="color:#C9A84C;">{{ total }} DH</span>
-    </div>
-  </div>
-  {% endif %}
+<h1 class="page-title">Informations de livraison</h1>
 
-  <form method="POST" action="/order">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-      <div class="form-group"><label>Nom</label><input type="text" name="name" placeholder="Votre nom" required></div>
-      <div class="form-group"><label>Prénom</label><input type="text" name="prenom" placeholder="Votre prénom" required></div>
+<form method="POST" class="order-form">
+
+    <div class="form-row">
+        <input type="text" name="name" placeholder="Nom" required>
+        <input type="text" name="prenom" placeholder="Prénom" required>
     </div>
-    <div class="form-group"><label>Adresse de livraison</label><input type="text" name="adresse" placeholder="Rue, Ville, Code postal" required></div>
-    <div class="form-group"><label>Téléphone</label><input type="tel" name="phone" placeholder="06 XX XX XX XX" required></div>
-    <button type="submit" class="btn-primary" style="width:100%;margin-top:8px;padding:14px;">Confirmer la commande</button>
-  </form>
-</div>
+
+    <input type="text" name="adresse" placeholder="Adresse" required>
+
+    <input type="text" name="phone" placeholder="Téléphone (10 chiffres)" required>
+
+    <button type="submit">
+        VALIDER LA COMMANDE
+    </button>
+
+</form>
+
 {% endblock %}

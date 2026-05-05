@@ -2,299 +2,57 @@
 
 {% block content %}
 
-<div style="max-width: 900px; margin: 0 auto; padding: 2rem;">
+<h1 class="page-title">Espace administrateur</h1>
 
-{% if not logged %}
+<div class="order-form">
 
-<!-- ── ÉCRAN MOT DE PASSE ── -->
-<div style="max-width:360px; margin:4rem auto; background:white; border:0.5px solid rgba(0,0,0,0.1); border-radius:12px; padding:2.5rem 2rem; text-align:center; box-shadow:0 8px 30px rgba(0,0,0,0.04);">
-    <div style="width:52px;height:52px;background:#f5f0e8;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.5">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 0110 0v4"/>
-        </svg>
-    </div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:0.5rem;">Espace administrateur</h2>
-    <p style="font-size:13px;color:#7a7570;margin-bottom:1.5rem;line-height:1.6;">Accès réservé. Entrez votre mot de passe.</p>
-    {% if error %}<p style="color:#c53030;font-size:13px;margin-bottom:12px;">{{ error }}</p>{% endif %}
-    <form method="POST" action="/admin">
-        <input type="password" name="password" placeholder="••••••••••••" required
-            style="width:100%;background:#f9f9f7;border:0.5px solid rgba(0,0,0,0.15);border-radius:8px;font-family:'Jost',sans-serif;font-size:14px;padding:12px 14px;text-align:center;letter-spacing:0.15em;outline:none;margin-bottom:12px;color:#1a1a18;">
-        <button type="submit" class="btn-primary">Accéder</button>
-    </form>
+    <input type="password" id="admin-pwd" placeholder="Mot de passe">
+
+    <p id="pwd-error" style="color:red; display:none;">
+        Mot de passe incorrect
+    </p>
+
+    <button class="btn-primary" onclick="checkPassword()">
+        Accéder
+    </button>
+
 </div>
 
-{% else %}
+<div id="orders" style="display:none; margin-top:30px;"></div>
 
-<!-- ── DASHBOARD ── -->
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;">
-    <h1 style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;">Tableau de bord</h1>
-    <a href="/logout-admin" style="font-size:12px;color:#7a7570;border:0.5px solid rgba(0,0,0,0.1);padding:6px 14px;border-radius:6px;text-decoration:none;font-family:'Jost',sans-serif;">Se déconnecter</a>
-</div>
-
-<!-- STATS -->
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:2.5rem;">
-    <div style="background:white;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:16px 18px;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#7a7570;margin-bottom:8px;">Commandes</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;">{{ orders|length }}</div>
-    </div>
-    <div style="background:white;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:16px 18px;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#7a7570;margin-bottom:8px;">Chiffre d'affaires</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;">{{ orders|sum(attribute='total') }} DH</div>
-    </div>
-    <div style="background:white;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:16px 18px;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.12em;color:#7a7570;margin-bottom:8px;">Produits</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:600;">{{ products|length }}</div>
-    </div>
-</div>
-
-<!-- ═══ AJOUTER UN PRODUIT ═══ -->
-<div style="background:white;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:1.8rem;margin-bottom:2rem;">
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;margin-bottom:1.2rem;">Ajouter un produit</h2>
-
-    <form method="POST" action="/add-product" enctype="multipart/form-data" id="addForm">
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-            <div class="form-group">
-                <label>Nom du produit</label>
-                <input type="text" name="name" placeholder="Robe Femme" required>
-            </div>
-            <div class="form-group">
-                <label>Prix (DH)</label>
-                <input type="number" name="price" placeholder="350" required>
-            </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
-            <div class="form-group">
-                <label>Taille</label>
-                <input type="text" name="size" placeholder="M / L / XL">
-            </div>
-            <div class="form-group">
-                <label>Catégorie</label>
-                <select name="category" style="width:100%;background:white;border:0.5px solid rgba(0,0,0,0.15);border-radius:8px;font-family:'Jost',sans-serif;font-size:14px;padding:11px 14px;color:#1a1a18;outline:none;">
-                    <option value="women">Femmes</option>
-                    <option value="men">Hommes</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="form-group" style="margin-bottom:12px;">
-            <label>Description (optionnelle)</label>
-            <textarea name="description" placeholder="Description du produit..."
-                style="width:100%;background:white;border:0.5px solid rgba(0,0,0,0.15);border-radius:8px;font-family:'Jost',sans-serif;font-size:14px;padding:11px 14px;color:#1a1a18;outline:none;resize:vertical;min-height:70px;"></textarea>
-        </div>
-
-        <!-- UPLOAD MULTI-IMAGES -->
-        <div class="form-group" style="margin-bottom:16px;">
-            <label>Photos du produit (plusieurs possibles)</label>
-
-            <div id="drop-zone" onclick="document.getElementById('imgInput').click()"
-                style="border:1.5px dashed rgba(201,168,76,0.5);border-radius:10px;padding:1.5rem;text-align:center;cursor:pointer;background:#fdfcf8;transition:border-color 0.2s;margin-top:4px;">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.3" style="margin-bottom:8px;">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                </svg>
-                <p style="font-size:13px;color:#7a7570;margin:0;">Cliquez ou glissez vos photos ici</p>
-                <p style="font-size:11px;color:#aaa;margin:4px 0 0;">JPG, PNG — plusieurs fichiers acceptés</p>
-            </div>
-
-            <input type="file" id="imgInput" name="images" multiple accept="image/*"
-                style="display:none;" onchange="previewImages(this)">
-
-            <!-- PRÉVISUALISATION -->
-            <div id="preview-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin-top:12px;"></div>
-        </div>
-
-        <button type="submit" class="btn-primary" style="max-width:200px;">
-            Ajouter le produit
-        </button>
-
-    </form>
-</div>
-
-<!-- ═══ COMMANDES ═══ -->
-<div style="margin-bottom:2.5rem;">
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:1.2rem;">
-        Commandes
-        <span style="font-size:12px;background:#1a1a18;color:#f5f0e8;padding:3px 10px;border-radius:20px;margin-left:8px;font-family:'Jost',sans-serif;font-weight:400;vertical-align:middle;">{{ orders|length }}</span>
-    </h2>
-
-    {% if orders %}
-        {% for o in orders %}
-        <div style="background:white;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;padding:16px 18px;margin-bottom:12px;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
-                <div>
-                    <div style="font-weight:500;font-size:15px;margin-bottom:4px;">{{ o.prenom }} {{ o.name }}</div>
-                    <div style="font-size:12px;color:#7a7570;display:flex;align-items:center;gap:5px;margin-top:3px;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 012 1.18 2 2 0 014 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-                        {{ o.phone }}
-                    </div>
-                    <div style="font-size:12px;color:#7a7570;display:flex;align-items:center;gap:5px;margin-top:2px;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                        {{ o.adresse }}
-                    </div>
-                </div>
-                <a href="/delete-order/{{ o.id }}" onclick="return confirm('Supprimer cette commande ?')"
-                    style="font-size:11px;color:#b53030;border:0.5px solid rgba(200,40,40,0.3);padding:5px 10px;border-radius:6px;text-decoration:none;font-family:'Jost',sans-serif;white-space:nowrap;">
-                    Supprimer
-                </a>
-            </div>
-            <div style="border-top:0.5px solid rgba(0,0,0,0.08);padding-top:10px;">
-                {% for item in o.produits %}
-                <div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0;">
-                    <span>{{ item.name }}</span><span>{{ item.price }} DH</span>
-                </div>
-                {% endfor %}
-                <div style="display:flex;justify-content:space-between;font-weight:500;font-size:14px;margin-top:8px;padding-top:8px;border-top:0.5px solid rgba(0,0,0,0.08);">
-                    <span>Total</span><span>{{ o.total }} DH</span>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-    {% else %}
-        <p style="text-align:center;color:#7a7570;font-size:14px;font-style:italic;padding:2rem 0;">Aucune commande pour le moment.</p>
-    {% endif %}
-</div>
-
-<!-- ═══ PRODUITS ═══ -->
-<div>
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:1.2rem;">
-        Produits
-        <span style="font-size:12px;background:#1a1a18;color:#f5f0e8;padding:3px 10px;border-radius:20px;margin-left:8px;font-family:'Jost',sans-serif;font-weight:400;vertical-align:middle;">{{ products|length }}</span>
-    </h2>
-
-    {% if products %}
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
-        {% for p in products %}
-        <div style="background:white;border:0.5px solid rgba(0,0,0,0.1);border-radius:10px;overflow:hidden;position:relative;">
-
-            <!-- IMAGES DU PRODUIT (carrousel mini) -->
-            <div style="position:relative;height:180px;background:#f5f0e8;overflow:hidden;">
-                {% if p.images %}
-                    {% for img in p.images %}
-                    <img src="/static/images/{{ img }}" alt="{{ p.name }}"
-                        style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:{{ '1' if loop.first else '0' }};transition:opacity 0.4s;border-radius:0;"
-                        class="prod-img-{{ p.id }}">
-                    {% endfor %}
-
-                    {% if p.images|length > 1 %}
-                    <div style="position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;">
-                        {% for img in p.images %}
-                        <span onclick="showAdminImg({{ p.id }}, {{ loop.index0 }})"
-                            style="width:6px;height:6px;border-radius:50%;background:{{ 'white' if loop.first else 'rgba(255,255,255,0.5)' }};cursor:pointer;display:inline-block;"
-                            class="dot-{{ p.id }}-{{ loop.index0 }}"></span>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                {% else %}
-                    <div style="display:flex;align-items:center;justify-content:center;height:100%;color:#aaa;font-size:12px;">Aucune image</div>
-                {% endif %}
-            </div>
-
-            <div style="padding:12px 14px;">
-                <div style="font-weight:500;font-size:14px;margin-bottom:3px;">{{ p.name }}</div>
-                <div style="font-size:12px;color:#7a7570;margin-bottom:2px;">{{ p.price }} DH · {{ p.size }}</div>
-                <div style="font-size:11px;color:#C9A84C;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px;">
-                    {{ 'Femmes' if p.category == 'women' else 'Hommes' }}
-                </div>
-                <!-- BOUTON SUPPRIMER -->
-                <a href="/delete-product/{{ p.id }}"
-                    onclick="return confirm('Supprimer {{ p.name }} ?')"
-                    style="display:block;text-align:center;font-size:11px;color:#b53030;border:0.5px solid rgba(200,40,40,0.3);padding:7px 10px;border-radius:6px;text-decoration:none;font-family:'Jost',sans-serif;transition:background 0.2s;"
-                    onmouseover="this.style.background='#fdf0f0'"
-                    onmouseout="this.style.background='transparent'">
-                    🗑 Supprimer le produit
-                </a>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-        <p style="text-align:center;color:#7a7570;font-size:14px;font-style:italic;padding:2rem 0;">Aucun produit pour le moment.</p>
-    {% endif %}
-</div>
-
-{% endif %}
-</div>
-
-<!-- ═══ SCRIPTS ═══ -->
 <script>
-// Prévisualisation images avant upload
-function previewImages(input) {
-    const grid = document.getElementById('preview-grid');
-    grid.innerHTML = '';
-    const files = Array.from(input.files);
+const ADMIN_PASSWORD = "elegancia2024";
 
-    files.forEach((file, index) => {
-        const reader = new FileReader();
-        reader.onload = e => {
-            const wrap = document.createElement('div');
-            wrap.style.cssText = 'position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;';
+function checkPassword(){
+    let pwd = document.getElementById("admin-pwd").value;
 
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
-
-            const badge = document.createElement('div');
-            badge.textContent = index === 0 ? 'Principal' : `Photo ${index + 1}`;
-            badge.style.cssText = `position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);color:white;font-size:9px;text-align:center;padding:3px;letter-spacing:0.05em;`;
-
-            wrap.appendChild(img);
-            wrap.appendChild(badge);
-            grid.appendChild(wrap);
-        };
-        reader.readAsDataURL(file);
-    });
-
-    // Mettre à jour le drop zone
-    const dz = document.getElementById('drop-zone');
-    dz.style.borderColor = '#C9A84C';
-    dz.querySelector('p').textContent = `${files.length} photo(s) sélectionnée(s)`;
+    if(pwd === ADMIN_PASSWORD){
+        document.getElementById("orders").style.display = "block";
+        loadOrders();
+    } else {
+        document.getElementById("pwd-error").style.display = "block";
+    }
 }
 
-// Drag & drop
-const dz = document.getElementById('drop-zone');
-if (dz) {
-    dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = '#C9A84C'; dz.style.background = '#fdf8ee'; });
-    dz.addEventListener('dragleave', () => { dz.style.borderColor = 'rgba(201,168,76,0.5)'; dz.style.background = '#fdfcf8'; });
-    dz.addEventListener('drop', e => {
-        e.preventDefault();
-        dz.style.borderColor = 'rgba(201,168,76,0.5)';
-        dz.style.background = '#fdfcf8';
-        const input = document.getElementById('imgInput');
-        input.files = e.dataTransfer.files;
-        previewImages(input);
+function loadOrders(){
+    fetch("/admin-data")
+    .then(res => res.json())
+    .then(data => {
+        let html = "";
+
+        data.forEach(order => {
+            html += `
+                <div class="cart-item">
+                    <p><b>${order.prenom} ${order.name}</b></p>
+                    <p>${order.phone}</p>
+                    <p>${order.adresse}</p>
+                </div>
+            `;
+        });
+
+        document.getElementById("orders").innerHTML = html;
     });
 }
-
-// Carrousel mini dans la grille admin
-function showAdminImg(productId, index) {
-    const imgs = document.querySelectorAll('.prod-img-' + productId);
-    imgs.forEach((img, i) => img.style.opacity = i === index ? '1' : '0');
-
-    const allDots = document.querySelectorAll('[class^="dot-' + productId + '-"]');
-    allDots.forEach(dot => {
-        const dotIndex = parseInt(dot.className.split('-').pop());
-        dot.style.background = dotIndex === index ? 'white' : 'rgba(255,255,255,0.5)';
-    });
-}
-
-// Auto-slide carrousel admin toutes les 3s
-document.querySelectorAll('[class*="prod-img-"]').forEach(img => {
-    const cls = img.className.match(/prod-img-(\d+)/);
-    if (!cls) return;
-    const pid = cls[1];
-    const imgs = document.querySelectorAll('.prod-img-' + pid);
-    if (imgs.length <= 1) return;
-
-    let current = 0;
-    setInterval(() => {
-        current = (current + 1) % imgs.length;
-        showAdminImg(parseInt(pid), current);
-    }, 3000);
-});
 </script>
 
 {% endblock %}
